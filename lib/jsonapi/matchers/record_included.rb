@@ -23,9 +23,21 @@ module Jsonapi
 
         case target_location
         when Array
-          return target_location.any?{ |t| t.with_indifferent_access["id"] == @expected.id.to_s }
+          if @expected.is_a? Array
+            # target_location is Array, @expected is Array
+            @expected.all? { |e| target_location.any? { |t| has_record? t, e } }
+          else
+            # target_location is Array, @expected is object
+            target_location.any? { |t| has_record? t, @expected }
+          end
         when ::Hash
-          return target_location.with_indifferent_access["id"] == @expected.id.to_s
+          if @expected.is_a? Array
+            # target_location is object, @expected is Array
+            @expected.all? { |e| has_record? target_location, e }
+          else
+            # target_location is object, @expected is object
+            has_record? target_location, @expected
+          end
         else
           @failure_message = "Expected value of #{@location} to be an Array or Hash but was #{target.inspect}"
           return false
@@ -33,16 +45,38 @@ module Jsonapi
       end
 
       def failure_message
-        @failure_message || "expected object with an id of '#{@expected.id}' to be included in #{@target.as_json.ai}"
+        return @failure_message if @failure_message
+
+        if @expected.is_a? Array
+          "expected objects with ids of #{@expected.map { |e| "'#{e.id}'" }.join ', '} to be included in #{@target.as_json.ai}"
+        else
+          "expected object with an id of '#{@expected.id}' to be included in #{@target.as_json.ai}"
+        end
       end
 
       def failure_message_when_negated
-        @failure_message_when_negated || "expected object with an id of '#{@expected.id}' to not be included in #{@target.as_json.ai}"
+        return @failure_message_when_negated if @failure_message_when_negated
+
+        if @expected.is_a? Array
+          "expected objects with ids of #{@expected.map { |e| "'#{e.id}'" }.join ', '} to not be included in #{@target.as_json.ai}"
+        else
+          "expected object with an id of '#{@expected.id}' to not be included in #{@target.as_json.ai}"
+        end
+      end
+
+      private
+
+      def has_record?(target, expected)
+        target.with_indifferent_access["id"] == expected.id.to_s
       end
     end
 
     module Record
       def have_record(expected)
+        RecordIncluded.new(expected, 'data')
+      end
+
+      def have_records(expected)
         RecordIncluded.new(expected, 'data')
       end
 
