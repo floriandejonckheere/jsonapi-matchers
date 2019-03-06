@@ -19,7 +19,7 @@ describe Jsonapi::Matchers::ErrorIncluded do
   end
 
   context 'expected is not a json body' do
-    let(:subject) { have_error(error) }
+    let(:subject) { have_error.with_code(error) }
     let(:response) { ActionDispatch::TestResponse.new(response_data.to_json) }
     let(:response_data) { nil }
 
@@ -27,9 +27,9 @@ describe Jsonapi::Matchers::ErrorIncluded do
       subject.matches?(response)
     end
 
-    # it 'tells you that the response body is not json' do
-    #   expect(subject.failure_message).to match("Expected response to be json string but was \"null\". JSON::ParserError - 776: unexpected token at 'null'")
-    # end
+    it 'tells you that the response body is not json' do
+      expect(subject.failure_message).to match("Expected response to be json string but was \"null\". NoMethodError - undefined method `with_indifferent_access' for nil:NilClass")
+    end
   end
 
   let(:response) { ActionDispatch::TestResponse.new(response_data.to_json) }
