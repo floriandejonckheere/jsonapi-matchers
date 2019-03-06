@@ -301,6 +301,72 @@ describe Jsonapi::Matchers::AttributesIncluded do
           end
         end
       end
+
+      describe 'is_empty' do
+        context 'relationship is array and it is empty' do
+          it 'matches' do
+            expect(have_relationship(:dogs).is_empty.matches?(target)).to be_truthy
+          end
+        end
+
+        context 'relationship is array and it is not empty' do
+          subject { have_relationship(:chairs).is_empty }
+
+          it 'does not match' do
+            expect(subject.matches?(target)).to be_falsey
+          end
+
+          it 'tells you the relationship is not empty' do
+            subject.matches?(target)
+            expect(subject.failure_message).to match("expected relationship 'chairs' to be empty, but got")
+          end
+        end
+
+        context 'relationship is record and it is empty' do
+          it 'matches' do
+            expect(have_relationship(:house).is_empty.matches?(target)).to be_truthy
+          end
+        end
+
+        context 'relationship is record and it is not empty' do
+          subject { have_relationship(:bike).is_empty }
+
+          it 'does not match' do
+            expect(subject.matches?(target)).to be_falsey
+          end
+
+          it 'tells you the relationship is not empty' do
+            subject.matches?(target)
+            expect(subject.failure_message).to match("expected relationship 'bike' to be empty, but got")
+          end
+        end
+
+        context 'relationship is nil' do
+          subject { have_relationship(:plane).is_empty }
+
+          it 'does not match' do
+            expect(subject.matches?(target)).to be_falsey
+          end
+
+          it 'tells you the expected relationship does not exist' do
+            subject.matches?(target)
+            expect(subject.failure_message).to eq("expected relationship 'plane' to be empty, but got ''")
+          end
+        end
+
+        context 'relationship does not exist' do
+          subject { have_relationship(:does_not_exist).is_empty }
+
+          it 'does not match' do
+            expect(subject.matches?(target)).to be_falsey
+          end
+
+          it 'tells you the expected relationship does not exist' do
+            subject.matches?(target)
+            expect(subject.failure_message).to eq("expected relationship 'does_not_exist' to be empty, but got ''")
+          end
+        end
+      end
     end
   end
 
@@ -336,6 +402,9 @@ describe Jsonapi::Matchers::AttributesIncluded do
               { type: 'telephone', id: '4' },
               { type: 'telephone', id: '5' }
             ]
+          },
+          dogs: {
+            data: []
           }
         }
       }

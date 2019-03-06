@@ -21,6 +21,11 @@ module Jsonapi
         self
       end
 
+      def is_empty
+        @check_empty = true
+        self
+      end
+
       def matches?(target)
         @target = normalize_target(target)
         return false unless @target
@@ -37,6 +42,8 @@ module Jsonapi
           value_exists?
         elsif @check_record
           record_exists?
+        elsif @check_empty
+          is_empty?
         else
           @target.key?(@attribute_name)
         end
@@ -71,6 +78,19 @@ module Jsonapi
           return true
         else
           @failure_message = "expected '#{@expected_record_id}' to be the id for relationship '#{@attribute_name}', but got '#{@value}'"
+          return false
+        end
+      end
+
+      def is_empty?
+        data = @value.try(:[], 'data')
+
+        if !@value.nil? && (data.nil? || data.try(:empty?))
+          # relationship exists, but data is nil or empty array
+          return true
+        else
+          # Relationship does not exist or is not nil/empty
+          @failure_message = "expected relationship '#{@attribute_name}' to be empty, but got '#{@value}'"
           return false
         end
       end
