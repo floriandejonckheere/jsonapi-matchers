@@ -23,7 +23,7 @@ module Jsonapi
 
         case target_location
         when Array
-          if @expected.is_a? Array
+          if @expected.respond_to? :each
             # target_location is Array, @expected is Array
             @expected.all? { |e| target_location.any? { |t| has_record? t, e } }
           else
@@ -31,7 +31,7 @@ module Jsonapi
             target_location.any? { |t| has_record? t, @expected }
           end
         when ::Hash
-          if @expected.is_a? Array
+          if @expected.respond_to? :each
             # target_location is object, @expected is Array
             @expected.all? { |e| has_record? target_location, e }
           else
@@ -47,7 +47,7 @@ module Jsonapi
       def failure_message
         return @failure_message if @failure_message
 
-        if @expected.is_a? Array
+        if @expected.respond_to? :each
           "expected objects with ids of #{@expected.map { |e| "'#{e.id}'" }.join ', '} to be included in #{@target.as_json.ai}"
         else
           "expected object with an id of '#{@expected.id}' to be included in #{@target.as_json.ai}"
@@ -57,7 +57,7 @@ module Jsonapi
       def failure_message_when_negated
         return @failure_message_when_negated if @failure_message_when_negated
 
-        if @expected.is_a? Array
+        if @expected.respond_to? :each
           "expected objects with ids of #{@expected.map { |e| "'#{e.id}'" }.join ', '} to not be included in #{@target.as_json.ai}"
         else
           "expected object with an id of '#{@expected.id}' to not be included in #{@target.as_json.ai}"
