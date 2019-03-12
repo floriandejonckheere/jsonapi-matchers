@@ -37,11 +37,11 @@ module Jsonapi
     end
 
     module Record
-      def have_record_count(expected)
+      def have_jsonapi_record_count(expected)
         RecordCount.new(expected, 'data')
       end
 
-      def include_record_count(expected)
+      def include_jsonapi_record_count(expected)
         RecordCount.new(expected, 'included')
       end
     end

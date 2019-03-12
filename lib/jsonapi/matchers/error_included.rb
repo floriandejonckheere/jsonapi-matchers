@@ -41,7 +41,7 @@ module Jsonapi
     end
 
     module Error
-      def have_error
+      def have_jsonapi_error
         ErrorIncluded.new
       end
     end

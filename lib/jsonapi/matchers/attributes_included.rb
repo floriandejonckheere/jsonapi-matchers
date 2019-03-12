@@ -97,19 +97,19 @@ module Jsonapi
     end
 
     module Attributes
-      def have_id(id)
+      def have_jsonapi_id(id)
         AttributesIncluded.new('id', nil).with_value(id)
       end
 
-      def have_type(type)
+      def have_jsonapi_type(type)
         AttributesIncluded.new('type', nil).with_value(type)
       end
 
-      def have_attribute(attribute_name)
+      def have_jsonapi_attribute(attribute_name)
         AttributesIncluded.new(attribute_name, :attributes)
       end
 
-      def have_relationship(relationship_name)
+      def have_jsonapi_relationship(relationship_name)
         AttributesIncluded.new(relationship_name, :relationships)
       end
     end

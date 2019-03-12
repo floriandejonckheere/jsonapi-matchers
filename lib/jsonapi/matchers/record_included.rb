@@ -72,15 +72,15 @@ module Jsonapi
     end
 
     module Record
-      def have_record(expected)
+      def have_jsonapi_record(expected)
         RecordIncluded.new(expected, 'data')
       end
 
-      def have_records(expected)
+      def have_jsonapi_records(expected)
         RecordIncluded.new(expected, 'data')
       end
 
-      def include_record(expected)
+      def include_jsonapi_record(expected)
         RecordIncluded.new(expected, 'included')
       end
     end
